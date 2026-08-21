@@ -224,7 +224,7 @@ public class CoreEmulator {
                 pc++;
                 break;
             case 0x1c:
-                ac = (e & 0xFF) == 0xFF;
+                ac = (e & 0x0F) == 0x0F;
                 e = (e + 1) & 0xff;
                 z = e == 0;
                 p = (Integer.bitCount(e) & 0x01) == 0;
@@ -232,7 +232,7 @@ public class CoreEmulator {
                 pc++;
                 break;
             case 0x1d:
-                ac = (e & 0xFF) == 0x00;
+                ac = (e & 0x0F) == 0x00;
                 e = (e - 1) & 0xff;
                 z = e == 0;
                 p = (Integer.bitCount(e) & 0x01) == 0;
@@ -387,6 +387,7 @@ public class CoreEmulator {
                 RAM[sp-1] = b;
                 RAM[sp-2] = c;
                 sp -= 2;
+                pc++;
                 break;
             case 0xc6:
                 temp = RAM[pc + 1] & 0xff;
@@ -455,6 +456,43 @@ public class CoreEmulator {
                 e = e ^ l;
                 l = l ^ e;
                 pc++;
+                break;
+            case 0xf1:
+                cy = (RAM[sp] & 0x01) == 1;
+                p = (RAM[sp] >>> 2 & 0x01) == 1;
+                ac = (RAM[sp] >>> 4 & 0x01) == 1;
+                z = (RAM[sp] >>> 6 & 0x01) == 1;
+                s =(RAM[sp] >>> 7 & 0x01) == 1;
+                a = RAM[sp + 1];
+                sp += 2;
+                pc++;
+                break;
+            case 0xf5:
+                temp = 0;
+                temp = temp | (cy ? 0x01 : 0x00);
+                temp = temp |  0x01 << 1;
+                temp = temp | (p ? 0x01 : 0x00) << 2;
+                temp = temp | (ac ? 0x01 : 0x00) << 4;
+                temp = temp | (z ? 0x01 : 0x00) << 6;
+                temp = temp | (s ? 0x01 : 0x00) << 7;
+                RAM[sp - 2] = temp;
+                RAM[sp - 1] = a;
+                sp -= 2;
+                pc++;
+                break;
+            case 0xfb:
+                pc++;
+                break;
+            case 0xfe:
+                temp = RAM[pc + 1] & 0xff;
+                ac = (a & 0x0f) < (temp & 0x0f);
+                cy = (a & 0xff) < temp;
+                temp = a - temp;
+                temp = temp & 0xff;
+                z = temp == 0;
+                p = Integer.bitCount(temp) % 2 == 0;
+                s = temp >>> 7 != 0;
+                pc += 2;
                 break;
 
 
