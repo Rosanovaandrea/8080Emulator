@@ -49,12 +49,37 @@ public class CoreEmulator {
         RAM = newRAM;
     }
 
+    public int getOpcode(){
+        return RAM[pc];
+    }
+
+    public int getOpcodeData(){
+        return RAM[pc + 1];
+    }
+
+    public void nextOpceAfetHw(){
+        pc += 2;
+    }
+
 
 
     public void emulationProcess(){
 
-        int opcode = RAM[pc];
+        int opcode;
 
+        try {
+
+             opcode = RAM[pc];
+
+        }catch (NullPointerException e){
+
+            throw new NullPointerException("ram non impostata");
+
+        }catch (ArrayIndexOutOfBoundsException e){
+
+            throw new ArrayIndexOutOfBoundsException("il program counter punta ad una locazione non presente");
+
+        }
 
         switch (opcode) {
 
