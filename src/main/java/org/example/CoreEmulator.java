@@ -61,6 +61,8 @@ public class CoreEmulator {
         pc += 2;
     }
 
+    public void rts
+
 
 
     public void emulationProcess(){

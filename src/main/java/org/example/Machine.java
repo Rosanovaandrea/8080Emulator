@@ -33,8 +33,26 @@ public class Machine {
             }
 
 
-       public void intputHandler(){
-
+       public void outputHandler(){
+            switch (emulator.getOpcodeData()) {
+                  case 2:
+                        setOffset(emulator.getA());
+                        break;
+                  case 3:
+                        // not yet implemented
+                        break;
+                  case 4:
+                        setShiftRegister(emulator.getA());
+                        break;
+                  case 5:
+                        //not yet implemented
+                        break;
+                  case 6:
+                        //not yet implemented
+                        break;
+                  default:
+                        throw new RuntimeException("porta in output non riconosciuta " + emulator.getOpcodeData());
+            }
        }
 
 
