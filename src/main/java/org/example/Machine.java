@@ -14,6 +14,8 @@ public class Machine {
             while (true){
                   int opcode = emulator.getOpcode();
 
+                  System.out.println(opcode);
+
                   switch (opcode) {
                         case inOpcode:
                               //inoperations

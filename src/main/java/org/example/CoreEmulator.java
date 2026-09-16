@@ -61,7 +61,15 @@ public class CoreEmulator {
         pc += 2;
     }
 
-    public void rts
+    public void rstEmulation(int interruptnumber){
+
+        RAM[sp-1] = (pc & 0xff00) >>> 8;
+        RAM[sp-2] = pc & 0xff;
+        sp -= 2;
+
+        pc = interruptnumber * 8;
+
+    }
 
 
 
@@ -359,6 +367,10 @@ public class CoreEmulator {
                 break;
             case 0x6f:
                 l = a;
+                pc++;
+                break;
+            case 0x76:
+                //HLT instruction
                 pc++;
                 break;
             case 0x77:
