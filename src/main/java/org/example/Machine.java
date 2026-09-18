@@ -1,5 +1,7 @@
 package org.example;
 
+import java.io.IOException;
+
 public class Machine {
       private CoreEmulator emulator;
       private int inutBus;
@@ -8,21 +10,53 @@ public class Machine {
       private final int outOpcode = 0xd3;
       private int shiftRegister = 0;
       private byte offset = 0;
+      private static final int MAX_OP = 5000; // per stare largo 5000, la media è 4166
+      private int currentnumberOp;
+      private boolean rtsNumber = false;
+
+      public void inizializeEmulatorRam() {
+            int pointer = 0;
+            pointer = CoreEmulator.initializeRAM(ROMContainer.H,pointer);
+            pointer = CoreEmulator.initializeRAM(ROMContainer.G,pointer);
+            pointer = CoreEmulator.initializeRAM(ROMContainer.F,pointer);
+            pointer = CoreEmulator.initializeRAM(ROMContainer.E,pointer);
+      }
+
+      public void setEmulator(CoreEmulator emulator){
+            this.emulator = emulator;
+      }
+
+      public Machine(){
+            currentnumberOp = 0;
+      }
 
       public void execution (){
 
             while (true){
+
+                  currentnumberOp++;
+
+
+
                   int opcode = emulator.getOpcode();
 
-                  System.out.println(opcode);
+                  if(currentnumberOp > MAX_OP){
+                        System.out.println(Integer.toHexString(opcode));
+                        int rtsNumberInt =  rtsNumber ? 2 : 1;
+                        rtsNumber = !rtsNumber;
+                        currentnumberOp = 0;
+                        emulator.rstEmulation(rtsNumberInt);
+                  }
+
+
 
                   switch (opcode) {
                         case inOpcode:
                               //inoperations
-                              emulator.nextOpceAfetHw();
+                              //emulator.nextOpceAfetHw();
                               break;
                         case outOpcode:
-                              //outputoperations
+                              outputHandler();
                               emulator.nextOpceAfetHw();
                               break;
                         default:

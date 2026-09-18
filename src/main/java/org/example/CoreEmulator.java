@@ -21,27 +21,21 @@ public class CoreEmulator {
 
     private int temp, mask;
 
-    public static int initializeRAM(String[] files, int startWrite) throws IOException {
+    public static void resetRam(){
+        for(int i=0;i<RAM.length;i++){
+            RAM[i]=-1;
+        }
+    }
+
+    public static int initializeRAM(short[] data, int startWrite) {
         int pointer = startWrite;
-        ByteBuffer byteBuffer = ByteBuffer.allocate(2048);
+        int i = 0;
 
-        for (String file : files) {
-            try (RandomAccessFile reader = new RandomAccessFile(file, "r");
-                 FileChannel channel = reader.getChannel()) {
-                while (channel.read(byteBuffer) != -1) {
-                    byteBuffer.flip();
-
-                    while (byteBuffer.hasRemaining()) {
-                        if (pointer < RAM.length) {
-                            RAM[pointer++] = byteBuffer.get() & 0xff;
-                        }
-                    }
-                    byteBuffer.clear();
-                }
-            }
+        for(; i < data.length; i++){
+            RAM[i + pointer] = (int) data[i] & 0xFF;
         }
 
-        return pointer;
+        return pointer + i;
     }
 
     // solo a scopo di test
@@ -335,6 +329,17 @@ public class CoreEmulator {
                 RAM[temp] = a & 0xff;
                 pc += 3;
                 break;
+            case 0x35:
+                hl = (h & 0xff) << 8 | l & 0xff;
+                temp = RAM[hl];
+                ac = (temp & 0x0f) == 0x00;
+                temp = (temp - 1) & 0xff;
+                s = (temp >>> 7) != 0;
+                z = temp == 0;
+                p = (Integer.bitCount(temp) % 2) == 0;
+                RAM[hl] = temp;
+                pc++;
+                break;
             case 0x36:
                 hl = (h & 0xff) << 8 | l & 0xff;
                 temp = RAM[pc + 1] & 0xff;
@@ -445,14 +450,25 @@ public class CoreEmulator {
                 s = a >>> 7 != 0;
                 pc += 2;
                 break;
+            case 0xc8:
+                temp = RAM[sp] & 0xff;
+                temp = temp | ((RAM[sp + 1] & 0xff) << 8);
+                sp = z ? sp + 2 : sp;
+                pc = z ? temp : (pc + 1);
+                break;
             case 0xc9:
                 pc = RAM[sp] & 0xff;
                 pc = pc | ((RAM[sp + 1] & 0xff) << 8);
                 sp += 2;
                 break;
+            case 0xca:
+                temp = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
+                mask = z ? -1 : 0;
+                pc = temp & mask | (pc + 3) & ~mask;
+                break;
             case 0xcd:
-                RAM[sp - 2] = (pc + 3) >>> 8;
-                RAM[sp - 1] = (pc + 3) & 0xff;
+                RAM[sp - 1] = (pc + 3) >>> 8;
+                RAM[sp - 2] = (pc + 3) & 0xff;
                 sp -= 2;
                 pc = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
                 break;
@@ -540,7 +556,7 @@ public class CoreEmulator {
                 pc += 2;
                 break;
             default:
-                throw new RuntimeException("opcode non gestito e riconosciuto");
+                throw new RuntimeException("opcode non gestito e riconosciuto: "+Integer.toHexString(opcode));
 
             }
         }
