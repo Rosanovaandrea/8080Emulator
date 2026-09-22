@@ -40,20 +40,24 @@ public class Machine {
 
                   int opcode = emulator.getOpcode();
 
+                  //System.out.println(Integer.toHexString(opcode));
+
                   if(currentnumberOp > MAX_OP){
-                        System.out.println(Integer.toHexString(opcode));
+                        System.out.printf("PC=0x%04X SP=0x%04X A=0x%02X%n",
+                                emulator.getPc(), emulator.getSp(), emulator.getA());
                         int rtsNumberInt =  rtsNumber ? 2 : 1;
                         rtsNumber = !rtsNumber;
                         currentnumberOp = 0;
                         emulator.rstEmulation(rtsNumberInt);
+                        continue;
                   }
 
 
 
                   switch (opcode) {
                         case inOpcode:
-                              //inoperations
-                              //emulator.nextOpceAfetHw();
+                              inputHnadler();
+                              emulator.nextOpceAfetHw();
                               break;
                         case outOpcode:
                               outputHandler();
@@ -67,6 +71,17 @@ public class Machine {
 
 
             }
+
+      public void inputHnadler(){
+            switch(emulator.getOpcodeData()){
+                  case 3:
+                        emulator.setA(getShiftRegisterWithOffset());
+                        break;
+                  default:
+                        if(currentnumberOp < 2000)emulator.setA(0xff);
+                        else emulator.setA(0x00);
+            }
+      }
 
 
        public void outputHandler(){

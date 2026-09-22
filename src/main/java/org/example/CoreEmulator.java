@@ -21,11 +21,6 @@ public class CoreEmulator {
 
     private int temp, mask;
 
-    public static void resetRam(){
-        for(int i=0;i<RAM.length;i++){
-            RAM[i]=-1;
-        }
-    }
 
     public static int initializeRAM(short[] data, int startWrite) {
         int pointer = startWrite;
@@ -320,6 +315,24 @@ public class CoreEmulator {
                 l = hl & 0xff;
                 pc++;
                 break;
+            case 0x2a:
+                temp = RAM[pc + 1] & 0xff | (RAM[pc + 2] & 0xff) << 8;
+                h = RAM[temp] & 0xff;
+                l = RAM[temp + 1] & 0xff;
+                pc+=3;
+                break;
+            case 0x2b:
+                hl = h << 8 | l & 0xff;
+                hl--;
+                hl = hl & 0xFFFF;
+                h = hl >>> 8;
+                l = hl & 0xff;
+                pc++;
+                break;
+            case 0x2e:
+                l = RAM[pc + 1] & 0xff;
+                pc+=2;
+                break;
             case 0x31:
                 sp = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
                 pc += 3;
@@ -346,18 +359,62 @@ public class CoreEmulator {
                 RAM[hl] = temp;
                 pc += 2;
                 break;
+            case 0x37:
+                cy = true;
+                pc++;
+                break;
             case 0x3a:
                 temp = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
                 a = RAM[temp] & 0xff;
                 pc += 3;
                 break;
+            case 0x3c:
+                ac = (a & 0x0f) == 0x0f;
+                a = a + 1;
+                a = a & 0xff;
+                z = a == 0;
+                p = (Integer.bitCount(a) % 2) == 0;
+                s = (a >>> 7) != 0;
+                pc++;
+                break;
+            case 0x3d:
+                ac = (a & 0x0f) == 0x00;
+                a = a - 1;
+                a = a & 0xff;
+                z = a == 0;
+                p = (Integer.bitCount(a) % 2) == 0;
+                s = (a >>> 7) != 0;
+                pc++;
+                break;
             case 0x3e:
                 a = RAM[pc + 1] & 0xff;
                 pc += 2;
                 break;
+            case 0x46:
+                hl = (h & 0xff) << 8 | l & 0xff;
+                b = RAM[hl] & 0xff;
+                pc++;
+                break;
+            case 0x47:
+                b = a & 0xff;
+                pc++;
+                break;
+            case 0x4e:
+                hl = (h & 0xff) << 8 | l & 0xff;
+                c = RAM[hl] & 0xff;
+                pc++;
+                break;
+            case 0x4f:
+                c = a;
+                pc++;
+                break;
             case 0x56:
                 hl = (h & 0xff) << 8 | l & 0xff;
                 d = RAM[hl] & 0xff;
+                pc++;
+                break;
+            case 0x57:
+                d = a & 0xff;
                 pc++;
                 break;
             case 0x5e:
@@ -365,22 +422,49 @@ public class CoreEmulator {
                 e = RAM[hl] & 0xff;
                 pc++;
                 break;
+            case 0x5f:
+                e = a & 0xff;
+                pc++;
+                break;
+            case 0x61:
+                h = c & 0xff;
+                pc++;
+                break;
             case 0x66:
                 hl = (h & 0xff) << 8 | l & 0xff;
                 h = RAM[hl] & 0xff;
                 pc++;
                 break;
+            case 0x67:
+                l = b & 0xff;
+                pc++;
+                break;
+            case 0x68:
+                h = a & 0xff;
+                pc++;
             case 0x6f:
                 l = a;
                 pc++;
                 break;
-            case 0x76:
-                //HLT instruction
+            case 0x70:
+                hl = (h & 0xff) << 8 | l & 0xff;
+                RAM[hl] = b;
                 pc++;
                 break;
+            case 0x76:
+                //HLT instruction
+                throw new RuntimeException("HLT RAGGIUNTO: "+Integer.toHexString(opcode));
             case 0x77:
                 hl = (h & 0xff) << 8 | l & 0xff;
-                RAM[hl] = c & 0xff;
+                RAM[hl] = a & 0xff;
+                pc++;
+                break;
+            case 0x78:
+                a = b;
+                pc++;
+                break;
+            case 0x79:
+                a = c;
                 pc++;
                 break;
             case 0x7a:
@@ -395,9 +479,44 @@ public class CoreEmulator {
                 a = h;
                 pc++;
                 break;
+            case 0x7d:
+                a = l;
+                pc++;
+                break;
             case 0x7e:
                 hl = (h & 0xff) << 8 | l & 0xff;
                 a = RAM[hl] & 0xff;
+                pc++;
+                break;
+            case 0x85:
+                ac = (~a & 0x0f) < (l & 0x0f);
+                cy = (~a & 0xff) < l;
+                a = a + l;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc ++;
+                break;
+            case 0x86:
+                hl = (h & 0xff) << 8 | l & 0xff;
+                temp = RAM[hl] & 0xff;
+                ac = (~a & 0x0f) < (temp & 0x0f);
+                cy = (~a & 0xff) < temp;
+                a = a + temp;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc ++;
+                break;
+            case 0xa0:
+                a = a & b;
+                z = a == 0;
+                ac = false;
+                cy = false;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
                 pc++;
                 break;
             case 0xa7:
@@ -405,6 +524,15 @@ public class CoreEmulator {
                 z = a == 0;
                 ac = true;
                 cy = false;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc++;
+                break;
+            case 0xa8:
+                ac = false;
+                cy = false;
+                a = (a & 0xff) ^ (b & 0xff);
+                z = a == 0;
                 p = Integer.bitCount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
@@ -417,6 +545,53 @@ public class CoreEmulator {
                 p = Integer.bitCount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
+                break;
+            case 0xb0:
+                ac = false;
+                cy = false;
+                a = (a & 0xff) | (b & 0xff);
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc++;
+                break;
+            case 0xb4:
+                ac = false;
+                cy = false;
+                a = (a & 0xff) | (h & 0xff);
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc++;
+                break;
+            case 0xb6:
+                ac = false;
+                cy = false;
+                hl = (h & 0xff) << 8 | l & 0xff;
+                temp = RAM[hl] & 0xff;
+                a = (a & 0xff) | (temp & 0xff);
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc++;
+                break;
+            case 0xe3:
+                l =  l ^ RAM[sp];
+                RAM[sp] =  RAM[sp] ^ l;
+                l = l ^ RAM[sp];
+                h = h ^ RAM[sp + 1];
+                RAM[sp + 1] = RAM[sp + 1] ^ h;
+                h = h ^ RAM[sp + 1];
+                pc++;
+                break;
+            case 0xe9:
+                pc = (h & 0xff) << 8 | (l & 0xff);
+                break;
+            case 0xc0:
+                temp = RAM[sp] & 0xff;
+                temp = temp | ((RAM[sp + 1] & 0xff) << 8);
+                sp = z ? sp : sp + 2;
+                pc = z ? (pc + 1) : temp ;
                 break;
             case 0xc1:
                 c = RAM[sp] & 0xff;
@@ -432,6 +607,14 @@ public class CoreEmulator {
             case 0xc3:
                 temp = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
                 pc = temp;
+                break;
+            case 0xc4:
+                mask = z ? 0 : -1;
+                temp = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
+                RAM[sp - 2] = mask  & ((pc + 3) & 0xff) | RAM[sp - 2] & ~mask;
+                RAM[sp - 1] =mask  & (((pc + 3) >>> 8) & 0xff) | RAM[sp - 1] & ~mask;
+                pc = mask & (temp & 0xFFFF) | (pc + 3) & ~mask;
+                sp = ((sp - 2) & 0xffff) & mask | sp & ~mask;
                 break;
             case 0xc5:
                 RAM[sp - 1] = b;
@@ -466,17 +649,36 @@ public class CoreEmulator {
                 mask = z ? -1 : 0;
                 pc = temp & mask | (pc + 3) & ~mask;
                 break;
+            case 0xcc:
+                mask = z ? -1 : 0;
+                temp = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
+                RAM[sp - 2] = mask  & ((pc + 3) & 0xff) | RAM[sp - 2] & ~mask;
+                RAM[sp - 1] =mask  & (((pc + 3) >>> 8) & 0xff) | RAM[sp - 1] & ~mask;
+                pc = mask & (temp & 0xFFFF) | (pc + 3) & ~mask;
+                sp = ((sp - 2) & 0xffff) & mask | sp & ~mask;
+                break;
             case 0xcd:
                 RAM[sp - 1] = (pc + 3) >>> 8;
                 RAM[sp - 2] = (pc + 3) & 0xff;
                 sp -= 2;
                 pc = (RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff;
                 break;
+            case 0xd0:
+                temp = (RAM[sp + 1] & 0xff) << 8 | RAM[sp] & 0xff;
+                mask = cy ? 0 : -1;
+                sp = (sp + 2) & mask | sp & ~mask;
+                pc = temp & mask | (pc + 1) & ~mask;
+                break;
             case 0xd1:
                 e = RAM[sp] & 0xff;
                 d = RAM[sp + 1] & 0xff;
                 sp += 2;
                 pc++;
+                break;
+            case 0xd2:
+                temp = ((RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff);
+                mask = cy ? 0 : -1;
+                pc =  ((pc + 3) & ~mask) | (temp & mask);
                 break;
             case 0xd3:
                 pc += 2;
@@ -486,6 +688,40 @@ public class CoreEmulator {
                 RAM[sp - 1] = d;
                 sp -= 2;
                 pc++;
+                break;
+            case 0xd6:
+                temp = RAM[pc + 1] & 0xff;
+                ac = (a & 0x0f) < (temp & 0x0f);
+                cy = (a & 0xff) < temp;
+                a = a - temp;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc += 2;
+                break;
+            case 0xd8:
+                temp = (RAM[sp + 1] & 0xff) << 8 | RAM[sp] & 0xff;
+                mask = cy ? -1 : 0;
+                sp = (sp + 2) & mask | sp & ~mask;
+                pc = temp & mask | (pc + 1) & ~mask;
+                break;
+            case 0xda:
+                temp = ((RAM[pc + 2] & 0xff) << 8 | RAM[pc + 1] & 0xff);
+                mask = cy ? -1 : 0;
+                pc =  ((pc + 3) & ~mask) | (temp & mask);
+                break;
+            case 0xde:
+                mask = cy ? 1 : 0;
+                temp = RAM[pc + 1] & 0xff;
+                ac = (a & 0x0f) - (temp & 0x0f) - mask < 0;
+                a = a - temp - mask;
+                cy = a < 0;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc += 2;
                 break;
             case 0xe1:
                 l = RAM[sp] & 0xff;
@@ -540,6 +776,22 @@ public class CoreEmulator {
                 RAM[sp - 1] = a;
                 sp -= 2;
                 pc++;
+                break;
+            case 0xf6:
+                temp = RAM[pc + 1] & 0xff;
+                ac = false;
+                cy = false;
+                a = a | temp;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc += 2;
+                break;
+            case 0xfa:
+                temp = (RAM[pc + 2] & 0xff) << 8 | (RAM[pc + 1] & 0xff);
+                mask = s ? -1 : 0;
+                pc = (temp & mask) | ((pc + 3) & ~mask);
                 break;
             case 0xfb:
                 pc++;
