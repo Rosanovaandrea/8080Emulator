@@ -13,6 +13,8 @@ public class Machine {
       private static final int MAX_OP = 5000; // per stare largo 5000, la media è 4166
       private int currentnumberOp;
       private boolean rtsNumber = false;
+      public int[] RAM;
+      Monitor monitor;
 
       public void inizializeEmulatorRam() {
             int pointer = 0;
@@ -28,9 +30,11 @@ public class Machine {
 
       public Machine(){
             currentnumberOp = 0;
+            RAM = CoreEmulator.RAM;
+            monitor = new Monitor();
       }
 
-      public void execution (){
+      public void execution () throws InterruptedException {
 
             while (true){
 
@@ -40,13 +44,16 @@ public class Machine {
 
                   int opcode = emulator.getOpcode();
 
-                  //System.out.println(Integer.toHexString(opcode));
 
                   if(currentnumberOp > MAX_OP){
-                        System.out.printf("PC=0x%04X SP=0x%04X A=0x%02X%n",
-                                emulator.getPc(), emulator.getSp(), emulator.getA());
+
                         int rtsNumberInt =  rtsNumber ? 2 : 1;
                         rtsNumber = !rtsNumber;
+
+                        if(rtsNumber){
+                              monitor.update();
+                              Thread.sleep(4);
+                        }
                         currentnumberOp = 0;
                         emulator.rstEmulation(rtsNumberInt);
                         continue;
@@ -73,18 +80,23 @@ public class Machine {
             }
 
       public void inputHnadler(){
+
             switch(emulator.getOpcodeData()){
                   case 3:
                         emulator.setA(getShiftRegisterWithOffset());
                         break;
+                  case 1:
+                        emulator.setA(0x00);
+                        break;
                   default:
-                        if(currentnumberOp < 2000)emulator.setA(0xff);
-                        else emulator.setA(0x00);
+                        emulator.setA(0x00);
+
             }
       }
 
 
        public void outputHandler(){
+
             switch (emulator.getOpcodeData()) {
                   case 2:
                         setOffset(emulator.getA());
@@ -105,6 +117,8 @@ public class Machine {
                         throw new RuntimeException("porta in output non riconosciuta " + emulator.getOpcodeData());
             }
        }
+
+
 
 
 

@@ -1,12 +1,17 @@
 package org.example;
 
 public class Main {
-    static void main() {
+    public static void main(String[] args)
+             {
         CoreEmulator emulator = new CoreEmulator();
         Machine machine = new Machine();
         machine.inizializeEmulatorRam();
         machine.setEmulator(emulator);
-        machine.execution();
+                 try {
+                     machine.execution();
+                 } catch (InterruptedException e) {
+                     throw new RuntimeException(e);
+                 }
 
-    }
+             }
 }
