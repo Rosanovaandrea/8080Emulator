@@ -12,14 +12,13 @@ public class CoreEmulator {
     //8 bit registers emulators
     private int a,b,c,d,e,h,l;
 
-    //16 bit register emolators
-    private int bc,hl,de,sp,pc;
+    private int sp,pc;
 
     //processor flags
     private boolean z,s,p,cy,ac;
 
 
-    private int temp, mask;
+
 
 
     public static int initializeRAM(short[] data, int startWrite) {
@@ -63,6 +62,16 @@ public class CoreEmulator {
 
 
     public void emulationProcess(){
+
+
+        int bc,hl,de;
+        int temp, mask, temp2;
+
+        boolean tempCy;
+        boolean tempAc;
+        boolean previousCy;
+
+
 
         int opcode;
 
@@ -301,6 +310,22 @@ public class CoreEmulator {
                 l = hl & 0xff;
                 pc++;
                 break;
+            case 0x24:
+                ac = (h & 0x0f) == 0x0f;
+                h = (h - 1) & 0xff;
+                z = h == 0;
+                p = (Integer.bitCount(h) & 0x01) == 0;
+                s = (h >>> 7) != 0;
+                pc++;
+                break;
+            case 0x25:
+                ac = (h & 0x0f) == 0x00;
+                h = (h + 1) & 0xff;
+                z = h == 0;
+                p = (Integer.bitCount(h) & 0x01) == 0;
+                s = (h >>> 7) != 0;
+                pc++;
+                break;
             case 0x26:
                 temp = RAM[pc + 1];
                 h = temp;
@@ -445,13 +470,37 @@ public class CoreEmulator {
                 b = a & 0xff;
                 pc++;
                 break;
+            case 0x48:
+                c = b & 0xff;
+                pc++;
+                break;
+            case 0x49:
+                c = c & 0xff;
+                pc++;
+                break;
+            case 0x4a:
+                c = d & 0xff;
+                pc++;
+                break;
+            case 0x4b:
+                c = e & 0xff;
+                pc++;
+                break;
+            case 0x4c:
+                c = h & 0xff;
+                pc++;
+                break;
+            case 0x4d:
+                c = l & 0xff;
+                pc++;
+                break;
             case 0x4e:
                 hl = (h & 0xff) << 8 | l & 0xff;
                 c = RAM[hl] & 0xff;
                 pc++;
                 break;
             case 0x4f:
-                c = a;
+                c = a & 0xff;
                 pc++;
                 break;
             case 0x56:
@@ -661,6 +710,97 @@ public class CoreEmulator {
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
+            case 0x88:
+                previousCy = cy;
+                mask = cy ? -1 : 0;
+                tempAc = (~a & 0x0f) <= (b & 0x0f);
+                ac = (~a & 0x0f) < (b & 0x0f);
+                tempCy = (~a & 0xff) <= (b & 0xff);
+                cy = (~a & 0xff) < (b & 0xff);
+                temp = a + b + 1;
+                temp2 = a + b;
+                ac = previousCy ? tempAc : ac;
+                cy = previousCy ? tempCy : cy;
+                a = mask & temp | temp2 & ~mask;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc ++;
+                break;
+            case 0x89:
+                previousCy = cy;
+                mask = cy ? -1 : 0;
+                tempAc = (~a & 0x0f) <= (c & 0x0f);
+                ac = (~a & 0x0f) < (c & 0x0f);
+                tempCy = (~a & 0xff) <= (c & 0xff);
+                cy = (~a & 0xff) < (c & 0xff);
+                temp = a + c + 1;
+                temp2 = a + c;
+                ac = previousCy ? tempAc : ac;
+                cy = previousCy ? tempCy : cy;
+                a = mask & temp | temp2 & ~mask;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc ++;
+                break;
+            case 0x8a:
+                previousCy = cy;
+                mask = cy ? -1 : 0;
+                tempAc = (~a & 0x0f) <= (d & 0x0f);
+                ac = (~a & 0x0f) < (d & 0x0f);
+                tempCy = (~a & 0xff) <= (d & 0xff);
+                cy = (~a & 0xff) < (d & 0xff);
+                temp = a + d + 1;
+                temp2 = a + d;
+                ac = previousCy ? tempAc : ac;
+                cy = previousCy ? tempCy : cy;
+                a = mask & temp | temp2 & ~mask;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc ++;
+                break;
+            case 0x8b:
+                previousCy = cy;
+                mask = cy ? -1 : 0;
+                tempAc = (~a & 0x0f) <= (e & 0x0f);
+                ac = (~a & 0x0f) < (e & 0x0f);
+                tempCy = (~a & 0xff) <= (e & 0xff);
+                cy = (~a & 0xff) < (e & 0xff);
+                temp = a + e + 1;
+                temp2 = a + e;
+                ac = previousCy ? tempAc : ac;
+                cy = previousCy ? tempCy : cy;
+                a = mask & temp | temp2 & ~mask;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc ++;
+                break;
+            case 0x8c:
+                previousCy = cy;
+                mask = cy ? -1 : 0;
+                tempAc = (~a & 0x0f) <= (h & 0x0f);
+                ac = (~a & 0x0f) < (h & 0x0f);
+                tempCy = (~a & 0xff) <= (h & 0xff);
+                cy = (~a & 0xff) < (h & 0xff);
+                temp = a + h + 1;
+                temp2 = a + h;
+                ac = previousCy ? tempAc : ac;
+                cy = previousCy ? tempCy : cy;
+                a = mask & temp | temp2 & ~mask;
+                a = a & 0xff;
+                z = a == 0;
+                p = Integer.bitCount(a) % 2 == 0;
+                s = a >>> 7 != 0;
+                pc ++;
+                break;
+
             case 0x90:
                 ac = (a & 0x0f) < (b & 0x0f);
                 cy = (a & 0xff) < b;
@@ -1089,7 +1229,7 @@ public class CoreEmulator {
         }
 
     public CoreEmulator(){
-        a = b = c = e = h = l = sp = pc = bc = hl = temp = mask = 0;
+        a = b = c = e = h = l = sp = pc = 0;
         z = s = p = cy = ac = false;
     }
 
@@ -1151,29 +1291,7 @@ public class CoreEmulator {
         this.l = l;
     }
 
-    public int getBc() {
-        return bc;
-    }
 
-    public void setBc(int bc) {
-        this.bc = bc;
-    }
-
-    public int getHl() {
-        return hl;
-    }
-
-    public void setHl(int hl) {
-        this.hl = hl;
-    }
-
-    public int getDe() {
-        return de;
-    }
-
-    public void setDe(int de) {
-        this.de = de;
-    }
 
     public int getSp() {
         return sp;
@@ -1230,24 +1348,5 @@ public class CoreEmulator {
     public void setAc(boolean ac) {
         this.ac = ac;
     }
-
-    public int getTemp() {
-        return temp;
-    }
-
-    public void setTemp(int temp) {
-        this.temp = temp;
-    }
-
-    public int getMask() {
-        return mask;
-    }
-
-    public void setMask(int mask) {
-        this.mask = mask;
-    }
-
-
-
 
 }

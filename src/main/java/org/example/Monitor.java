@@ -13,6 +13,8 @@ public class Monitor {
         void handle(boolean down);
     }
 
+    private Machine machine;
+
     private static final int SCREEN_W  = 224;
     private static final int SCREEN_H  = 256;
     private static final int VRAM_BASE = 0x2400;
@@ -28,14 +30,26 @@ public class Monitor {
     private final JPanel panel;
 
     // Handler: ricevono true = down, false = up
-    private KeyHandler onLeft   = down -> {};
-    private KeyHandler onRight  = down -> {};
-    private KeyHandler onFire   = down -> {};
-    private KeyHandler onCoin   = down -> {};
-    private KeyHandler onStart1 = down -> {};
-    private KeyHandler onStart2 = down -> {};
+    private KeyHandler onLeft   = down -> {
+        if(down)  machine.machineLeftDown(); else  machine.machineLeftUp();
+    };
+    private KeyHandler onRight  = down -> {
+        if(down)  machine.machineRightDown(); else machine.machineRIghtUp();
+    };
+    private KeyHandler onFire   = down -> {
+        if(down)  machine.machineFireDown(); else machine.machineFireUp();
+    };
+    private KeyHandler onCoin   = down -> {
+        if(down)  machine.machineCoinDown(); else machine.machineCoinUp();
+    };
+    private KeyHandler onStart1 = down -> {
+        if(down) machine.machineStartDown(); else machine.machineStartUp();
+    };
+    private KeyHandler onStart2 = down -> {
+        if(down) machine.machineStartDown(); else machine.machineStartUp();
+    };
 
-    public Monitor() {
+    public Monitor(Machine machine) {
         panel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -61,6 +75,7 @@ public class Monitor {
         frame.setVisible(true);
 
         panel.requestFocusInWindow();
+        this.machine = machine;
     }
 
     private void dispatch(int keyCode, boolean down) {
