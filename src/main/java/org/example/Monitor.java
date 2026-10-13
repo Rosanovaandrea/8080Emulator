@@ -29,7 +29,6 @@ public class Monitor {
     private final JFrame frame;
     private final JPanel panel;
 
-    // Handler: ricevono true = down, false = up
     private KeyHandler onLeft   = down -> {
         if(down)  machine.machineLeftDown(); else  machine.machineLeftUp();
     };
@@ -103,7 +102,6 @@ public class Monitor {
         panel.repaint();
     }
 
-    // --- Setter ---
 
     public void setOnLeft(KeyHandler h)   { onLeft = h; }
     public void setOnRight(KeyHandler h)  { onRight = h; }

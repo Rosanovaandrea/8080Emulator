@@ -118,7 +118,7 @@ public class CoreEmulator {
                 b = (b + 1) & 0xff;
                 s = (b >>> 7) != 0;
                 z = b == 0;
-                p = (Integer.bitCount(b) % 2) == 0;
+                p = (eightbitcount(b) % 2) == 0;
                 pc++;
                 break;
             case 0x05:
@@ -126,7 +126,7 @@ public class CoreEmulator {
                 b = (b - 1) & 0xff;
                 s = (b >>> 7) != 0;
                 z = b == 0;
-                p = (Integer.bitCount(b) % 2) == 0;
+                p = (eightbitcount(b) % 2) == 0;
                 pc++;
                 break;
             case 0x06:
@@ -170,7 +170,7 @@ public class CoreEmulator {
                 c = (c + 1) & 0xff;
                 s = (c >>> 7) != 0;
                 z = c == 0;
-                p = Integer.bitCount(c) % 2 == 0;
+                p = eightbitcount(c) % 2 == 0;
                 pc++;
                 break;
             case 0x0d:
@@ -178,7 +178,7 @@ public class CoreEmulator {
                 c = (c - 1) & 0xff;
                 s = (c >>> 7) != 0;
                 z = c == 0;
-                p = Integer.bitCount(c) % 2 == 0;
+                p = eightbitcount(c) % 2 == 0;
                 pc++;
                 break;
             case 0x0e:
@@ -216,7 +216,7 @@ public class CoreEmulator {
                 d = (d + 1) & 0xff;
                 s = (d >>> 7) != 0;
                 z = d == 0;
-                p = Integer.bitCount(d) % 2 == 0;
+                p = eightbitcount(d) % 2 == 0;
                 pc++;
                 break;
             case 0x15:
@@ -224,7 +224,7 @@ public class CoreEmulator {
                 d = (d - 1) & 0xff;
                 s = (d >>> 7) != 0;
                 z = d == 0;
-                p = Integer.bitCount(d) % 2 == 0;
+                p = eightbitcount(d) % 2 == 0;
                 pc++;
                 break;
             case 0x16:
@@ -266,7 +266,7 @@ public class CoreEmulator {
                 ac = (e & 0x0F) == 0x0F;
                 e = (e + 1) & 0xff;
                 z = e == 0;
-                p = (Integer.bitCount(e) & 0x01) == 0;
+                p = (eightbitcount(e) & 0x01) == 0;
                 s = (e >>> 7) != 0;
                 pc++;
                 break;
@@ -274,7 +274,7 @@ public class CoreEmulator {
                 ac = (e & 0x0F) == 0x00;
                 e = (e - 1) & 0xff;
                 z = e == 0;
-                p = (Integer.bitCount(e) & 0x01) == 0;
+                p = (eightbitcount(e) & 0x01) == 0;
                 s = (e >>> 7) != 0;
                 pc++;
                 break;
@@ -314,7 +314,7 @@ public class CoreEmulator {
                 ac = (h & 0x0f) == 0x0f;
                 h = (h - 1) & 0xff;
                 z = h == 0;
-                p = (Integer.bitCount(h) & 0x01) == 0;
+                p = (eightbitcount(h) & 0x01) == 0;
                 s = (h >>> 7) != 0;
                 pc++;
                 break;
@@ -322,7 +322,7 @@ public class CoreEmulator {
                 ac = (h & 0x0f) == 0x00;
                 h = (h + 1) & 0xff;
                 z = h == 0;
-                p = (Integer.bitCount(h) & 0x01) == 0;
+                p = (eightbitcount(h) & 0x01) == 0;
                 s = (h >>> 7) != 0;
                 pc++;
                 break;
@@ -361,7 +361,7 @@ public class CoreEmulator {
                 ac = (l & 0x0F) == 0x0f;
                 l = (l + 1) & 0xff;
                 z = l == 0;
-                p = (Integer.bitCount(l) & 0x01) == 0;
+                p = (eightbitcount(l) & 0x01) == 0;
                 s = (l >>> 7) != 0;
                 pc++;
                 break;
@@ -389,7 +389,7 @@ public class CoreEmulator {
                 temp = (temp + 1) & 0xff;
                 s = (temp >>> 7) != 0;
                 z = temp == 0;
-                p = (Integer.bitCount(temp) % 2) == 0;
+                p = (eightbitcount(temp) % 2) == 0;
                 RAM[hl] = temp;
                 pc++;
                 break;
@@ -400,7 +400,7 @@ public class CoreEmulator {
                 temp = (temp - 1) & 0xff;
                 s = (temp >>> 7) != 0;
                 z = temp == 0;
-                p = (Integer.bitCount(temp) % 2) == 0;
+                p = (eightbitcount(temp) % 2) == 0;
                 RAM[hl] = temp;
                 pc++;
                 break;
@@ -424,7 +424,7 @@ public class CoreEmulator {
                 a = a + 1;
                 a = a & 0xff;
                 z = a == 0;
-                p = (Integer.bitCount(a) % 2) == 0;
+                p = (eightbitcount(a) % 2) == 0;
                 s = (a >>> 7) != 0;
                 pc++;
                 break;
@@ -433,7 +433,7 @@ public class CoreEmulator {
                 a = a - 1;
                 a = a & 0xff;
                 z = a == 0;
-                p = (Integer.bitCount(a) % 2) == 0;
+                p = (eightbitcount(a) % 2) == 0;
                 s = (a >>> 7) != 0;
                 pc++;
                 break;
@@ -634,7 +634,7 @@ public class CoreEmulator {
                 a = a + b;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -644,7 +644,7 @@ public class CoreEmulator {
                 a = a + c;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -654,7 +654,7 @@ public class CoreEmulator {
                 a = a + d;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -664,7 +664,7 @@ public class CoreEmulator {
                 a = a + e;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -674,7 +674,7 @@ public class CoreEmulator {
                 a = a + h;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -684,7 +684,7 @@ public class CoreEmulator {
                 a = a + l;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -696,7 +696,7 @@ public class CoreEmulator {
                 a = a + temp;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -706,7 +706,7 @@ public class CoreEmulator {
                 a = a + a;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -724,7 +724,7 @@ public class CoreEmulator {
                 a = mask & temp | temp2 & ~mask;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -742,7 +742,7 @@ public class CoreEmulator {
                 a = mask & temp | temp2 & ~mask;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -760,7 +760,7 @@ public class CoreEmulator {
                 a = mask & temp | temp2 & ~mask;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -778,7 +778,7 @@ public class CoreEmulator {
                 a = mask & temp | temp2 & ~mask;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -796,7 +796,7 @@ public class CoreEmulator {
                 a = mask & temp | temp2 & ~mask;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -807,7 +807,7 @@ public class CoreEmulator {
                 a = a - b;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -817,7 +817,7 @@ public class CoreEmulator {
                 a = a - c;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -827,7 +827,7 @@ public class CoreEmulator {
                 a = a - d;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -837,7 +837,7 @@ public class CoreEmulator {
                 a = a - e;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -847,7 +847,7 @@ public class CoreEmulator {
                 a = a - h;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -857,7 +857,7 @@ public class CoreEmulator {
                 a = a - l;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -869,7 +869,7 @@ public class CoreEmulator {
                 a = a - temp;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -879,7 +879,7 @@ public class CoreEmulator {
                 a = a - a;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc ++;
                 break;
@@ -887,7 +887,7 @@ public class CoreEmulator {
                 cy = false;
                 a = a & b;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -897,7 +897,7 @@ public class CoreEmulator {
                 temp = RAM[hl] & 0xff;
                 a = a & temp;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -905,7 +905,7 @@ public class CoreEmulator {
                 cy = false;
                 a = a & a;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -913,7 +913,7 @@ public class CoreEmulator {
                 cy = false;
                 a = (a & 0xff) ^ (b & 0xff);
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -921,7 +921,7 @@ public class CoreEmulator {
                 cy = false;
                 a = a ^ a;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -929,7 +929,7 @@ public class CoreEmulator {
                 cy = false;
                 a = (a & 0xff) | (b & 0xff);
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -937,7 +937,7 @@ public class CoreEmulator {
                 cy = false;
                 a = (a & 0xff) | (h & 0xff);
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -947,7 +947,7 @@ public class CoreEmulator {
                 temp = RAM[hl] & 0xff;
                 a = (a & 0xff) | (temp & 0xff);
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc++;
                 break;
@@ -957,7 +957,7 @@ public class CoreEmulator {
                 temp = a - b;
                 temp = temp & 0xff;
                 z = temp == 0;
-                p = Integer.bitCount(temp) % 2 == 0;
+                p = eightbitcount(temp) % 2 == 0;
                 s = temp >>> 7 != 0;
                 pc ++;
                 break;
@@ -967,7 +967,7 @@ public class CoreEmulator {
                 temp = a - h;
                 temp = temp & 0xff;
                 z = temp == 0;
-                p = Integer.bitCount(temp) % 2 == 0;
+                p = eightbitcount(temp) % 2 == 0;
                 s = temp >>> 7 != 0;
                 pc ++;
                 break;
@@ -979,7 +979,7 @@ public class CoreEmulator {
                 temp = a - temp;
                 temp = temp & 0xff;
                 z = temp == 0;
-                p = Integer.bitCount(temp) % 2 == 0;
+                p = eightbitcount(temp) % 2 == 0;
                 s = temp >>> 7 != 0;
                 pc ++;
                 break;
@@ -1037,7 +1037,7 @@ public class CoreEmulator {
                 cy = a > 0xff;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc += 2;
                 break;
@@ -1112,7 +1112,7 @@ public class CoreEmulator {
                 a = a - temp;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc += 2;
                 break;
@@ -1135,7 +1135,7 @@ public class CoreEmulator {
                 cy = a < 0;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc += 2;
                 break;
@@ -1156,7 +1156,7 @@ public class CoreEmulator {
                 cy = false;
                 a = a & temp;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc += 2;
                 break;
@@ -1199,7 +1199,7 @@ public class CoreEmulator {
                 a = a | temp;
                 a = a & 0xff;
                 z = a == 0;
-                p = Integer.bitCount(a) % 2 == 0;
+                p = eightbitcount(a) % 2 == 0;
                 s = a >>> 7 != 0;
                 pc += 2;
                 break;
@@ -1218,7 +1218,7 @@ public class CoreEmulator {
                 temp = a - temp;
                 temp = temp & 0xff;
                 z = temp == 0;
-                p = Integer.bitCount(temp) % 2 == 0;
+                p = eightbitcount(temp) % 2 == 0;
                 s = temp >>> 7 != 0;
                 pc += 2;
                 break;
@@ -1227,6 +1227,15 @@ public class CoreEmulator {
 
             }
         }
+
+    // conteggio bit nel bite, metodo divite ed impera
+    public int eightbitcount(int integer){
+        integer = integer & 0xff;
+        integer = integer - ((integer >> 1) & 0x55);
+        integer = (integer& 0x33) + ((integer >> 2) & 0x33);
+        integer = (integer + (integer >> 4)) & 0x0F;
+        return integer ;
+    }
 
     public CoreEmulator(){
         a = b = c = e = h = l = sp = pc = 0;
