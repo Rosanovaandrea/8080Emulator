@@ -18,7 +18,39 @@ public class CoreEmulator {
     private boolean z,s,p,cy,ac;
 
 
+    //temp variables
+    int bc,hl,de;
+    int temp, mask, temp2;
 
+    boolean tempCy;
+    boolean tempAc;
+    boolean previousCy;
+
+
+    public void DAAOpcode(){
+
+        if(((a & 0x0f) > 9 | ac)){
+            ac = (~a & 0x0f) < 6;
+            a = a + 6;
+        }
+
+        if( (a >>> 4) > 9 | cy){
+            temp = a >>> 4;
+            cy = ~temp < 6 || cy;
+            temp = temp + 6;
+            temp = (temp << 4) & 0xff;
+            a = a & 0x0f | temp;
+        }
+    }
+
+    // conteggio bit nel bite, metodo divite ed impera
+    public int eightbitcount(int integer){
+        integer = integer & 0xff;
+        integer = integer - ((integer >> 1) & 0x55);
+        integer = (integer& 0x33) + ((integer >> 2) & 0x33);
+        integer = (integer + (integer >> 4)) & 0x0F;
+        return integer ;
+    }
 
 
     public static int initializeRAM(short[] data, int startWrite) {
@@ -64,12 +96,7 @@ public class CoreEmulator {
     public void emulationProcess(){
 
 
-        int bc,hl,de;
-        int temp, mask, temp2;
 
-        boolean tempCy;
-        boolean tempAc;
-        boolean previousCy;
 
 
 
@@ -332,6 +359,7 @@ public class CoreEmulator {
                 pc += 2;
                 break;
             case 0x27:
+                DAAOpcode();
                 pc ++;
                 break;
             case 0x29:
@@ -1228,14 +1256,9 @@ public class CoreEmulator {
             }
         }
 
-    // conteggio bit nel bite, metodo divite ed impera
-    public int eightbitcount(int integer){
-        integer = integer & 0xff;
-        integer = integer - ((integer >> 1) & 0x55);
-        integer = (integer& 0x33) + ((integer >> 2) & 0x33);
-        integer = (integer + (integer >> 4)) & 0x0F;
-        return integer ;
-    }
+
+
+
 
     public CoreEmulator(){
         a = b = c = e = h = l = sp = pc = 0;
